@@ -22,24 +22,31 @@ namespace OSMTrack.Controllers
                 using (TcpClient client = new TcpClient())
                 {
                     await client.ConnectAsync(host, port);
-                    using (SslStream sslStream = new SslStream(client.GetStream(), false))
+                    if(client.Connected)
                     {
-                        await sslStream.AuthenticateAsClientAsync(host);
-                        string requestMessage = "GET / HTTP/1.1\r\n" + $"Host: {host}\r\n" + "Connection: close\r\n" + "\r\n";
-                        byte[] requestBytes = Encoding.ASCII.GetBytes(requestMessage);
-
-                        await sslStream.WriteAsync(requestBytes, 0, requestBytes.Length);
-                        await sslStream.FlushAsync();
-                        using (StreamReader reader = new StreamReader(sslStream, Encoding.ASCII))
+                        using (SslStream sslStream = new SslStream(client.GetStream(), false))
                         {
-                            string response = await reader.ReadToEndAsync();
-                            var result = new
-                            {
-                                Response = response
-                            };
+                            await sslStream.AuthenticateAsClientAsync(host);
+                            string requestMessage = "GET / HTTP/1.1\r\n" + $"Host: {host}\r\n" + "Connection: close\r\n" + "\r\n";
+                            byte[] requestBytes = Encoding.ASCII.GetBytes(requestMessage);
 
-                            return Ok(result);
+                            await sslStream.WriteAsync(requestBytes, 0, requestBytes.Length);
+                            await sslStream.FlushAsync();
+                            using (StreamReader reader = new StreamReader(sslStream, Encoding.ASCII))
+                            {
+                                string response = await reader.ReadToEndAsync();
+                                var result = new
+                                {
+                                    Response = response
+                                };
+
+                                return Ok(result);
+                            }
                         }
+                    }
+                    else
+                    {
+                        return BadRequest();
                     }
                 }
             }
