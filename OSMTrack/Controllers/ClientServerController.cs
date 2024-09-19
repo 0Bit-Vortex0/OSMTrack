@@ -56,6 +56,7 @@ namespace OSMTrack.Controllers
                 {
                     Error = $"Erro ao conectar ao servidor: {ex.Message}"
                 };
+
                 return StatusCode(500, errorResult);
             }
         }
