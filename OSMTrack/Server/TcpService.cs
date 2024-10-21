@@ -12,7 +12,7 @@ namespace OSMTrack.Server
 
         public TcpService()
         {
-            _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 5000);
+            _listener = new TcpListener(IPAddress.Parse("144.217.170.238"), 8172);
             _clients = new List<TcpClient>();
         }
 
